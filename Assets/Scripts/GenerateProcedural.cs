@@ -80,6 +80,8 @@ public class GenerateProcedural : MonoBehaviour {
 
     public GameObject voxelPrefab;
 
+	public bool connectRooms;
+
     [Range(0,100)]
     public float randomFillPercent;
 
@@ -287,7 +289,31 @@ public class GenerateProcedural : MonoBehaviour {
 
 	void CreatePassage(Room roomA, Room roomB, Coord tileA, Coord tileB) {
 		Room.ConnectRooms (roomA, roomB);
-		Debug.DrawLine (new Vector2(tileA.tileX, tileA.tileY), new Vector2(tileB.tileX, tileB.tileY), Color.green, 100);
+
+		Vector2 currentPos = new Vector2(tileA.tileX, tileA.tileY);
+		Coord tileC;
+
+		Vector2 direction = new Vector2(tileB.tileX - tileA.tileX, tileB.tileY - tileA.tileY);
+		direction.Normalize();
+
+		if (connectRooms)
+		{
+			while (Mathf.Abs(currentPos.x - tileB.tileX) > 1 | Mathf.Abs(currentPos.y - tileB.tileY) > 1)
+			{
+				currentPos += direction;
+				tileC = new Coord((int)Mathf.Round(currentPos.x), (int)Mathf.Round(currentPos.y));
+
+				voxels[tileC.tileX, tileC.tileY - 1].state = false;
+				voxels[tileC.tileX, tileC.tileY].state = false;
+				voxels[tileC.tileX, tileC.tileY + 1].state = false;
+				voxels[tileC.tileX - 1, tileC.tileY - 1].state = false;
+				voxels[tileC.tileX - 1, tileC.tileY].state = false;
+				voxels[tileC.tileX - 1, tileC.tileY + 1].state = false;
+				voxels[tileC.tileX + 1, tileC.tileY - 1].state = false;
+				voxels[tileC.tileX + 1, tileC.tileY].state = false;
+				voxels[tileC.tileX + 1, tileC.tileY + 1].state = false;
+			}
+		}
 	}
 
 
